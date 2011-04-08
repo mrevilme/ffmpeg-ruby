@@ -1,0 +1,15 @@
+README.rdoc
+Rakefile
+ext/ffmpeg_ruby/extconf.rb
+ext/ffmpeg_ruby/ffmpeg_avcodec.c
+ext/ffmpeg_ruby/ffmpeg_avcodec.h
+ext/ffmpeg_ruby/ffmpeg_avformat.c
+ext/ffmpeg_ruby/ffmpeg_avformat.h
+ext/ffmpeg_ruby/ffmpeg_avstream.c
+ext/ffmpeg_ruby/ffmpeg_avstream.h
+ext/ffmpeg_ruby/ffmpeg_ruby.c
+ext/ffmpeg_ruby/ffmpeg_ruby.h
+lib/ffmpeg-ruby.rb
+tasks/mac_specific.rake
+test/test.rb
+Manifest
