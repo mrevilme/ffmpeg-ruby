@@ -58,14 +58,20 @@ VALUE AVFormatContext_new(VALUE klaas, VALUE ruby_filename) {
 		// Open video file
 		if(av_open_input_file(&pFormatCtx, filename, NULL, 0, NULL)!=0) {
 				rb_raise(rb_eRuntimeError, "Could not open video file %s", filename);
-			return NULL;
+			return Qnil;
 		}
 	
 		// Retrieve stream information
 		if(av_find_stream_info(pFormatCtx)<0) {
 			rb_raise(rb_eRuntimeError, "Could find the stream information in file %s", filename);
-			return NULL; // Couldn't find stream information
+			return Qnil; // Couldn't find stream information
 		}
+
+		AVOutputFormat *pOutputFormat = av_guess_format(NULL,pFormatCtx->filename,NULL);
+		if ( !pOutputFormat )
+			pOutputFormat = av_guess_format("mpeg",NULL,NULL);
+
+		pFormatCtx->oformat = pOutputFormat;
 
 		VALUE result = Data_Wrap_Struct(klaas, AVFormatContext_mark, AVFormatContext_free, pFormatCtx);
 		rb_obj_call_init(result, 0, 0);
@@ -143,6 +149,28 @@ VALUE AVFormatContext_album(VALUE self) {
 	return rb_str_new2(ptr->album);
 }
 
+VALUE AVFormatContext_format(VALUE self) {
+	return AVOutputFormat_new(cFFMpegAVOutputFormat, self);
+}
+
+VALUE AVOutputFormat_new(VALUE klaas, VALUE obj) {
+
+	//Check_Type(obj, );
+	AVFormatContext *ptr;
+	Data_Get_Struct(obj, AVFormatContext, ptr);
+	AVOutputFormat *format = ptr->oformat;
+	VALUE result = Data_Wrap_Struct(klaas, AVOutputFormat_mark, AVOutputFormat_free, format);
+	//rb_obj_call_init(result, 0, 0);
+	return result;
+}
+
+
+VALUE AVOutputFormat_name(VALUE self) {
+  AVOutputFormat *ptr;
+  Data_Get_Struct(self, AVOutputFormat, ptr);
+  return rb_str_new2(ptr->name);
+}
+
 
 void Init_ffmpeg_ruby_avformat(VALUE module)
 {
@@ -159,7 +187,10 @@ void Init_ffmpeg_ruby_avformat(VALUE module)
 		rb_define_method(cFFMpegAVFormatContext, "bit_rate", AVFormatContext_bit_rate, 0);
 		rb_define_method(cFFMpegAVFormatContext, "codec_contexts", AVFormatContext_codec_contexts, 0);
 		rb_define_method(cFFMpegAVFormatContext, "dump_format", AVFormatContext_dump_format, 0);
+		rb_define_method(cFFMpegAVFormatContext, "format", AVFormatContext_format, 0);
 
 		cFFMpegAVOutputFormat = rb_define_class_under(module, "AVOutputFormat", rb_cObject);
+		rb_define_method(cFFMpegAVOutputFormat, "name", AVOutputFormat_name, 0);
+		rb_define_singleton_method(cFFMpegAVOutputFormat, "new", AVOutputFormat_new, 1);
 		rb_define_singleton_method(cFFMpegAVOutputFormat, "supported_avformats", supported_avformats, 0);
 }

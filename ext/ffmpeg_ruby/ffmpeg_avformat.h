@@ -6,6 +6,8 @@ VALUE cFFMpegAVOutputFormat;
 
 void AVOutputFormat_mark(void *v);
 void AVOutputFormat_free(void *v);
+VALUE AVOutputFormat_new(VALUE,VALUE);
+VALUE AVOutputFormat_name(VALUE);
 
 void AVFormatContext_mark(void *v);
 void AVFormatContext_free(void *v);

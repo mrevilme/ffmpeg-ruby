@@ -47,3 +47,5 @@ f.codec_contexts.each_with_index{|ctx,i|
 puts "-- Now dumping the format:"
 f.dump_format
 
+puts "-- Testing getting the format name"
+puts "  #{f.format.name}"
